@@ -2,8 +2,6 @@
 #RUN COMMAND
 
 ```
-    -- make up 
-    or 
     -- docker-compose up -d --build
 ```
 
@@ -12,3 +10,5 @@
     -- php artisan test
 ```
 # telecom_task
+
+# Please after start wait several minutes until all commands finish
