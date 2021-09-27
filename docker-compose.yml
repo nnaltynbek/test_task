@@ -1,0 +1,53 @@
+version: "3.7"
+networks:
+    app-network:
+        driver: bridge
+volumes:
+    dbdata:
+        driver: local
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: app
+        working_dir: /var/www/html
+        volumes:
+            - ./:/var/www/html
+        ports:
+            - "9001:9000"
+        networks:
+            - app-network
+
+    webserver:
+        image: nginx
+        container_name: webserver
+        ports:
+            - "8000:80"
+            - "443:443"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+        networks:
+            - app-network
+        depends_on:
+            -   app
+            -   db
+
+    db:
+        image: mysql:5.7.22
+        container_name: db
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_USER: root
+            MYSQL_PASSWORD: password
+        volumes:
+            - dbdata:/var/lib/mysql/
+        networks:
+            - app-network
