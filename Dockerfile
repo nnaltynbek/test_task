@@ -10,16 +10,9 @@ COPY . /var/www/html
 
 WORKDIR /var/www/html
 
-#CMD bash -c "cp docker-entrypoint.sh / && \
-#    chmod +x docker-entrypoint.sh \
-#    ./docker-entrypoint.sh && \
-#    php-fpm"
-
-
 CMD bash -c "cp docker-entrypoint.sh /usr/local/bin && \
     chmod +x /usr/local/bin/docker-entrypoint.sh && \
     ln -s usr/local/bin/docker-entrypoint.sh && \
-    /usr/local/bin/docker-entrypoint.sh && \
     php-fpm"
 
-#ENTRYPOINT ["/bin/sh", "docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "docker-entrypoint.sh"]
