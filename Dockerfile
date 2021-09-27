@@ -21,9 +21,4 @@ RUN apt-get update && \
   composer config -g process-timeout 3600 && \
   composer config -g repos.packagist composer https://packagist.org
 
-
-RUN   composer install && \
-          php artisan migrate &&  \
-          php artisan optimize
-
 CMD ["php-fpm"]

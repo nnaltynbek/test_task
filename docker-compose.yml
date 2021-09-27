@@ -1,10 +1,4 @@
 version: "3.7"
-networks:
-    app-network:
-        driver: bridge
-volumes:
-    dbdata:
-        driver: local
 
 services:
     app:
@@ -16,10 +10,17 @@ services:
         volumes:
             - ./:/var/www/html
             - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/custom.ini
+            - ./init.sh:/init.sh
+
         ports:
             - "9001:9000"
-        networks:
-            - app-network
+        command:
+            - /bin/bash
+            - -c
+            - |
+                chmod +x /init.sh && /init.sh && php-fpm
+        depends_on:
+            - db
 
     webserver:
         image: nginx
@@ -30,17 +31,15 @@ services:
         volumes:
             - ./:/var/www/html
             - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
-        networks:
-            - app-network
         depends_on:
-            -   app
-            -   db
+            - app
 
     db:
         image: mysql:5.7.22
         container_name: db
         restart: unless-stopped
         tty: true
+        working_dir: /var/www/html
         ports:
             - "3307:3306"
         environment:
@@ -50,5 +49,7 @@ services:
             MYSQL_PASSWORD: password
         volumes:
             - dbdata:/var/lib/mysql/
-        networks:
-            - app-network
+
+volumes:
+    dbdata:
+        driver: local
